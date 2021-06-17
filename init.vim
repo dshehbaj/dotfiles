@@ -1,3 +1,12 @@
+"      _          _     _           _
+"     | |        | |   | |         (_)
+"  ___| |__   ___| |__ | |__   __ _ _
+" / __| '_ \ / _ \ '_ \| '_ \ / _` | |
+" \__ \ | | |  __/ | | | |_) | (_| | |
+" |___/_| |_|\___|_| |_|_.__/ \__,_| |
+"                                 _/ |
+"                                |__/
+
 syntax enable        " enable syntax processing
 set nowrap           " turn off word wapring/wrapping
 set noerrorbells     " no error bells
@@ -7,6 +16,7 @@ set shiftwidth=2     " number of spaces with << and >>
 set expandtab        " tabs are spaces
 set rnu              " show relative numbering
 set nu               " show the line number the cursor is at
+set nohlsearch       " no highlighting after search is complete
 set wildmenu         " visual autocomplete for command menu
 set showmatch        " hightlight matching [{()}]
 set incsearch        " search as characters are entered
@@ -16,20 +26,25 @@ set linebreak        " only break between words
 set smartindent      " indents according to the syntax/style of code
 set cmdheight=2      " height of the command line area
 set updatetime=50    " time in ms before plugins work after the last keystroke
+set guicursor=       " block cursor
+set scrolloff=8      " better scrolling experience
+set signcolumn=yes   " left side bar for linting/git/errors
+
 set noswapfile       " no swap files
 set nobackup         " no backups
+set undodir=~/.vim/undodir
+set undofile
 
 " Setting colorcolumn to grey color
 highlight ColorColumn ctermbg=0 guibg=lightgrey
 
 " Vim-Plug. Plugins stored in the mentioned dir.
-call plug#begin('~/.config/nvim/plugged')
+call plug#begin('~/.vim/plugged')
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'gruvbox-community/gruvbox'
 Plug 'sainnhe/gruvbox-material'
 Plug 'sheerun/vim-polyglot'
-Plug 'preservim/nerdtree'
 Plug 'rstacruz/vim-closer'
 Plug 'unblevable/quick-scope'
 
@@ -56,29 +71,21 @@ let g:gruvbox_contrast_dark = 'hard'
 colorscheme gruvbox
 set background=dark
 
-"Key Bindings
+" Latex autocompile with pdflatex
+nnoremap <C-l> :w<CR> :!pdflatex %<CR><CR>
 
-"Easy navigation betwen windows
-nnoremap <C-l> <C-w>l
-nnoremap <C-h> <C-w>h
-nnoremap <C-k> <C-w>k
-nnoremap <C-j> <C-w>j
-
-"Creating new vertical window
-nnoremap <C-n> :vnew<CR>
-
-"CTRL bindings for cut copy paste undo
-vnoremap <C-c> y
-inoremap <C-p> p
-vnoremap <C-z> u
-vnoremap <C-x> x
-nnoremap <C-s> :w<CR>
-
-"Nerd tree settings
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-
-"For displaying trailing spaces and tabs.
+" For displaying trailing spaces and tabs.
 :set listchars=tab:>·,trail:~,space:·
 :set list
 
+" Function for trimming trailing whitespace
+fun! TrimTrails()
+  let l:save = winsaveview()
+  keeppatterns %s/\s\+$//e
+  call winrestview(l:save)
+endfun
+
+augroup TRIM_TRAIL
+  autocmd!
+  autocmd BufWritePre * :call TrimTrails()
+augroup END
