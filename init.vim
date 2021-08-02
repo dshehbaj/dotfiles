@@ -41,9 +41,9 @@ highlight ColorColumn ctermbg=0 guibg=lightgrey
 " Vim-Plug. Plugins stored in the mentioned dir.
 call plug#begin('~/.vim/plugged')
 
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'gruvbox-community/gruvbox'
 Plug 'sainnhe/gruvbox-material'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sheerun/vim-polyglot'
 Plug 'rstacruz/vim-closer'
 Plug 'unblevable/quick-scope'
@@ -71,9 +71,6 @@ let g:gruvbox_contrast_dark = 'hard'
 colorscheme gruvbox
 set background=dark
 
-" Latex autocompile with pdflatex
-nnoremap <C-l> :w<CR> :!pdflatex %<CR><CR>
-
 " For displaying trailing spaces and tabs.
 :set listchars=tab:>·,trail:~,space:·
 :set list
@@ -89,3 +86,10 @@ augroup TRIM_TRAIL
   autocmd!
   autocmd BufWritePre * :call TrimTrails()
 augroup END
+
+command! -nargs=0 Prettier :CocCommand prettier.formatFile
+
+" Latex autocompile with pdflatex
+nnoremap <Leader>p :w<CR> :!pdflatex %<CR><CR> :!latexmk -c %<CR><CR>
+
+nnoremap <Leader>l :Prettier<CR>
